@@ -10,6 +10,6 @@ standard = "2008"
 # ]
 
 [libraries]
-work.files = [
+defaultlib.files = [
   '**/*.vhd'
 ]
