@@ -5,7 +5,7 @@ entity test_3 is
   port (
          input_1    : in  std_logic;
          input_2    : in  std_logic;
-         and_result : out std_logic
+         or_result : out std_logic
        );
 end test_3;
 
@@ -17,12 +17,12 @@ begin
   button_a <= not input_1;
   button_b <= not input_2;
 
-  e_and_gate : entity work.and_gate 
+  e_and_gate : entity work.or_gate 
   port map (
              in_a => button_a,
              in_b => button_b,
              result => led_sig
            );
   -- Output LED as active low
-  and_result <= not led_sig;
+  or_result <= not led_sig;
 end rtl;

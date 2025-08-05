@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity and_gate is
+entity or_gate is
   port (
          in_a : in std_logic;
          in_b : in std_logic;
@@ -10,7 +10,7 @@ entity and_gate is
        );
 end entity;
 
-architecture rtl of and_gate is
+architecture rtl of or_gate is
 begin
   result <= in_a and in_b;
 end architecture;
