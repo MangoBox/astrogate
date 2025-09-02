@@ -11,7 +11,7 @@ use ieee.numeric_std.all;
 
 entity hdmi_out is
     generic (
-        RESOLUTION   : string  := "HD1080P"; -- HD1080P, HD720P, SVGA, VGA
+        RESOLUTION : string := "VGA";
         GEN_PATTERN  : boolean := false; -- generate pattern or objects
         GEN_PIX_LOC  : boolean := true; -- generate location counters for x / y coordinates
         OBJECT_SIZE  : natural := 16; -- size of the objects. should be higher than 11
@@ -22,9 +22,7 @@ entity hdmi_out is
         clk, rst : in std_logic;
         -- tmds output ports
         clk_p : out std_logic;
-        clk_n : out std_logic;
-        data_p : out std_logic_vector(2 downto 0);
-        data_n : out std_logic_vector(2 downto 0)
+        data_p : out std_logic_vector(2 downto 0)
     );
 end hdmi_out;
 
@@ -44,46 +42,43 @@ architecture rtl of hdmi_out is
 
 begin
 
-    -- generate 1x pixel and 5x serial clocks
-    timing_hd1080p: if RESOLUTION = "HD1080P" generate
-    begin
     clock: entity work.clock_gen(rtl)
-      generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>2, CLKOUT1_DIV=>10) -- 1080p
-      port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
-    end generate;
-
-    timing_hd720p: if RESOLUTION = "HD720P" generate
-    begin
-    clock: entity work.clock_gen(rtl)
-        generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>4, CLKOUT1_DIV=>20) -- 720p
-        port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
-    end generate;
-
-    timing_vga: if RESOLUTION = "SVGA" generate
-    begin
-    clock: entity work.clock_gen(rtl)
-        generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>5, CLKOUT1_DIV=>25) -- 800x600
-        port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
-    end generate;
-
-    timing_svga: if RESOLUTION = "VGA" generate
-    begin
-    clock: entity work.clock_gen(rtl)
-        generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>8, CLKOUT1_DIV=>40) -- 640x480
-        port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk );
-    end generate;
+      port map (
+        clk_i=>clk,
+        clk0_o=>serclk,
+        clk1_o=>pixclk,
+        a_rst => rst -- Is async reset okay here?
+      );
 
     -- video timing
     timing: entity work.timing_generator(rtl)
-        generic map (RESOLUTION => RESOLUTION, GEN_PIX_LOC => GEN_PIX_LOC, OBJECT_SIZE => OBJECT_SIZE)
-        port map (clk=>pixclk, hsync=>hsync, vsync=>vsync, video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y);
+      generic map (
+        RESOLUTION => RESOLUTION, 
+        GEN_PIX_LOC => GEN_PIX_LOC, 
+        OBJECT_SIZE => OBJECT_SIZE
+      )
+      port map (
+        clk=>pixclk,
+        hsync=>hsync,
+        vsync=>vsync, 
+        video_active=>video_active,
+        pixel_x=>pixel_x,
+        pixel_y=>pixel_y
+      );
 
     -- tmds signaling
     tmds_signaling: entity work.rgb2tmds(rtl)
-        generic map (SERIES6=>SERIES6)
-        port map (rst=>rst, pixelclock=>pixclk, serialclock=>serclk,
-        video_data=>video_data, video_active=>video_active, hsync=>hsync, vsync=>vsync,
-        clk_p=>clk_p, clk_n=>clk_n, data_p=>data_p, data_n=>data_n);
+      port map (
+        rst=>rst,
+        pixelclock=>pixclk,
+        serialclock=>serclk,
+        video_data=>video_data,
+        video_active=>video_active,
+        hsync=>hsync,
+        vsync=>vsync,
+        clk_p=>clk_p,
+        data_p=>data_p
+      );
 
     -- pattern generator
     gen_patt: if GEN_PATTERN = true generate
