@@ -7,8 +7,6 @@ entity astrogate_top is
          clk  : in std_logic;
          -- Global Reset
          rst  : in std_logic;
-         -- Camera SCCB
-         sccb_clk_out : out std_logic;
 
          -- HDMI Signals
          hdmi_clk_p : out std_logic;
@@ -31,10 +29,4 @@ begin
      clk_p => hdmi_clk_p,
      data_p => hdmi_data_p
    );
-
-  -- e_camera_sccb : entity work.camera_sccb
-  --   port map (
-  --     clk_in => clk,
-  --     sccb_clk_out => sccb_clk_out
-  --    );
 end rtl;
