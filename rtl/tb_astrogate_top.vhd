@@ -7,7 +7,7 @@ end tb_astrogate_top;
 architecture behavior of tb_astrogate_top is
     -- Clock and reset signals
     signal clk   : std_logic := '0';
-    signal reset : std_logic := '1';
+    signal reset : std_logic := '0';
 begin
 
     -- Clock generation process: 50 MHz = 20 ns period
@@ -24,9 +24,9 @@ begin
     -- Reset generation process
     reset_process : process
     begin
-        reset <= '1';       -- Assert reset
+        reset <= '0';       -- Assert reset
         wait for 1 us;
-        reset <= '0';       -- Deassert reset
+        reset <= '1';       -- Deassert reset
         wait until false;
     end process;
 

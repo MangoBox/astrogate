@@ -16,7 +16,9 @@ entity astrogate_top is
 end astrogate_top;
 
 architecture rtl of astrogate_top is
+  signal rst_n : std_logic;
 begin
+  rst_n <= not rst;
   g_hdmi_out : entity work.hdmi_out
    generic map (
      RESOLUTION => "VGA",
@@ -24,7 +26,7 @@ begin
    )
    port map (
      clk => clk,
-     rst => rst,
+     rst => rst_n,
      -- HDMI Diff Signals
      clk_p => hdmi_clk_p,
      data_p => hdmi_data_p
