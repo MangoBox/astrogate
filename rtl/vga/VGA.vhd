@@ -4,13 +4,14 @@ use ieee.numeric_std.all;
 
 entity VGA is
   generic(
-    sync_polarity : std_logic := '1'
+    sync_polarity : std_logic := '1';
+    VGA_OUTPUT_DEPTH_G : integer := 4
      );
   port(
        i_clk50: in std_logic;
-       o_red:   out std_logic;
-       o_green: out std_logic;
-       o_blue:  out std_logic;
+       o_red:   out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
+       o_green: out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
+       o_blue:  out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
        o_hs:    out std_logic;
        o_vs:    out std_logic
      );
@@ -21,9 +22,9 @@ architecture Behavioral of VGA is
   signal hs : natural := 0;
   signal vs : natural := 0;
 
-  signal red : std_logic := '0';
-  signal green : std_logic := '0';
-  signal blue : std_logic := '0';
+  signal red : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
+  signal green : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
+  signal blue : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
 
   -- Colour is currently writable to the display
   signal is_addressable : std_logic := '0';
@@ -44,9 +45,9 @@ architecture Behavioral of VGA is
 begin
 
   -- Output gating if in addressable area.
-  o_red <= red when is_addressable = '1' else '0';
-  o_green <= green when is_addressable = '1' else '0';
-  o_blue <= blue when is_addressable = '1' else '0';
+  o_red <= red when is_addressable = '1' else (others => '0');
+  o_green <= green when is_addressable = '1' else (others => '0');
+  o_blue <= blue when is_addressable = '1' else (others => '0');
 
   is_addressable <= '1' when
     vs < V_RES and
@@ -68,15 +69,16 @@ begin
   begin
     if rising_edge(clk25) then
       -- Background colour
-      red <= '0';
-      green <= '0';
-      blue <= '0';
+      red <= (others => '0');
+      green <= (others => '0');
+      blue <= (others => '0');
+      -- Test generation pattern
       if (  hs > H_RES / 2 - 200
         and hs < H_RES / 2 + 200
         and vs > V_RES / 2 - 200
         and vs < V_RES / 2 + 200
       ) then
-        red <= '1';
+        red <= (others => '1');
       end if;
 
       -- Horizontal Sync Pulse
