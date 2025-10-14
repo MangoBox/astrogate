@@ -86,6 +86,17 @@ set_location_assignment PIN_84 -to vga_red[0]
 set_location_assignment PIN_85 -to vga_red[1]
 set_location_assignment PIN_86 -to vga_red[2]
 set_location_assignment PIN_87 -to vga_red[3]
+set_global_assignment -name VHDL_FILE ip/ov7670_pll/ov7670_pll.vhd
+set_global_assignment -name VHDL_FILE rtl/sccb/sccb_master.vhd
+set_global_assignment -name VHDL_FILE rtl/i2c/i2c_master.vhd
+set_global_assignment -name VHDL_FILE rtl/common/common_pkg.vhd
+set_global_assignment -name VHDL_FILE rtl/camera/OV7670_fsm.vhd
+set_global_assignment -name VHDL_FILE rtl/camera/ov7670_capture.vhd
+set_global_assignment -name VHDL_FILE rtl/camera/ov7670_configuration.vhd
 set_global_assignment -name VHDL_FILE rtl/vga/VGA.vhd
 set_global_assignment -name VHDL_FILE astrogate_top.vhd
+set_global_assignment -name QIP_FILE ip/ov7670_pll.qip
+set_global_assignment -name QIP_FILE ip/ram/ov7670_ram.qip
+set_global_assignment -name QIP_FILE ip/vga_pll/vga_pll.qip
+set_global_assignment -name QIP_FILE ip/framebuffer/framebuffer.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

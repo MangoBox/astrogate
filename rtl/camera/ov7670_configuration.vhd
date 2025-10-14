@@ -1,36 +1,36 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
-USE work.common_pkg.ALL;
+use work.common_pkg.all;
 
-ENTITY ov7670_configuration IS
-    PORT (
-        clk : IN STD_LOGIC;
-        rst : IN STD_LOGIC;
-        edge : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-        sda : INOUT STD_LOGIC;
-        scl : INOUT STD_LOGIC;
-        start : IN STD_LOGIC;
-        done : OUT STD_LOGIC;
-        ack_err : OUT STD_LOGIC;
-        ov7670_reset : OUT STD_LOGIC;
-        config_finished : OUT STD_LOGIC;
-        reg_value : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+entity ov7670_configuration is
+    port (
+        clk : in std_logic;
+        rst : in std_logic;
+        edge : in std_logic_vector(3 downto 0);
+        sda : inout std_logic;
+        scl : inout std_logic;
+        start : in std_logic;
+        done : out std_logic;
+        ack_err : out std_logic;
+        ov7670_reset : out std_logic;
+        config_finished : out std_logic;
+        reg_value : out std_logic_vector(7 downto 0)
     );
-END ov7670_configuration;
+end ov7670_configuration;
 
-ARCHITECTURE Behavioral OF ov7670_configuration IS
-    SIGNAL i2c_ena : STD_LOGIC := '0'; -- latch in command
-    SIGNAL i2c_addr : STD_LOGIC_VECTOR(6 DOWNTO 0) := (OTHERS => '0'); -- address of target slave
-    SIGNAL i2c_rw : STD_LOGIC := '0';
-    SIGNAL i2c_busy : STD_LOGIC := '0'; -- indicates transaction in progress
-    SIGNAL i2c_rdata, i2c_wdata : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0'); -- data read from slave
-    SIGNAL i2c_ack_err : STD_LOGIC := '0'; -- flag if improper acknowledge from slave
+architecture behavioral of ov7670_configuration is
+    signal i2c_ena : std_logic := '0'; -- latch in command
+    signal i2c_addr : std_logic_vector(6 downto 0) := (others => '0'); -- address of target slave
+    signal i2c_rw : std_logic := '0';
+    signal i2c_busy : std_logic := '0'; -- indicates transaction in progress
+    signal i2c_rdata, i2c_wdata : std_logic_vector(7 downto 0) := (others => '0'); -- data read from slave
+    signal i2c_ack_err : std_logic := '0'; -- flag if improper acknowledge from slave
 
-BEGIN
+begin
 
-    ov7670_fsm : ENTITY work.ov7670_fsm(rtl)
-        PORT MAP(
+    ov7670_fsm : entity work.ov7670_fsm(rtl)
+        port map(
             clk => clk,
             rst => rst,
             start => start,
@@ -46,11 +46,11 @@ BEGIN
             done => done
         );
 
-    i2c_master : ENTITY work.i2c_master(logic) --i2c_master entity
-        GENERIC MAP(
-            input_clk => C_ARTY_A7_CLK_FREQ
+    i2c_master : entity work.i2c_master(logic) --i2c_master entity
+        generic map(
+            input_clk => c_arty_a7_clk_freq
         )
-        PORT MAP(
+        port map(
             clk => clk,
             reset_n => rst,
             ena => i2c_ena,
@@ -66,4 +66,4 @@ BEGIN
 
     ack_err <= i2c_ack_err;
 
-END Behavioral;
+end behavioral;

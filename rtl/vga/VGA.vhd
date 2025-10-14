@@ -8,7 +8,7 @@ entity VGA is
     VGA_OUTPUT_DEPTH_G : integer := 4
      );
   port(
-       i_clk50: in std_logic;
+       i_clk25: in std_logic;
        o_red:   out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
        o_green: out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
        o_blue:  out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
@@ -18,7 +18,6 @@ entity VGA is
 end VGA;
 
 architecture Behavioral of VGA is
-  signal clk25             : std_logic;
   signal hs : natural := 0;
   signal vs : natural := 0;
 
@@ -53,21 +52,9 @@ begin
     vs < V_RES and
     hs < H_RES else '0';
 
-  -- generate a 25Mhz clock
-  process (i_clk50)
+  process (i_clk25)
   begin
-    if rising_edge(i_clk50) then
-      if (clk25 = '0') then              
-        clk25 <= '1';
-      else
-        clk25 <= '0';
-      end if;
-    end if;
-  end process;
-
-  process (clk25)
-  begin
-    if rising_edge(clk25) then
+    if rising_edge(i_clk25) then
       -- Background colour
       red <= (others => '0');
       green <= (others => '0');
