@@ -3,6 +3,9 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 ENTITY ov7670_capture IS
+    GENERIC (
+      FRAME_BUFFER_BIT_DEPTH_G : integer := 16
+    );
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
@@ -20,7 +23,7 @@ ENTITY ov7670_capture IS
         --frame_buffer signals
         wea : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
         dina : OUT STD_LOGIC_VECTOR(11 DOWNTO 0);
-        addra : OUT STD_LOGIC_VECTOR(18 DOWNTO 0)
+        addra : OUT STD_LOGIC_VECTOR(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0)
     );
 END ov7670_capture;
 
@@ -46,7 +49,7 @@ ARCHITECTURE rtl OF ov7670_capture IS
         href_cnt : INTEGER RANGE 0 TO 500;
         rgb_reg : STD_LOGIC_VECTOR(15 DOWNTO 0);
         pixel_reg : INTEGER RANGE 0 TO 650;
-        bram_address : unsigned(18 DOWNTO 0);
+        bram_address : unsigned(FRAME_BUFFER_BIT_DEPTH_G - 1 DOWNTO 0);
     END RECORD reg_type;
 
     CONSTANT INIT_REG_FILE : reg_type := (

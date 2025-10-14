@@ -56,17 +56,17 @@ begin
   begin
     if rising_edge(i_clk25) then
       -- Background colour
-      red <= (others => '0');
-      green <= (others => '0');
-      blue <= (others => '0');
-      -- Test generation pattern
-      if (  hs > H_RES / 2 - 200
-        and hs < H_RES / 2 + 200
-        and vs > V_RES / 2 - 200
-        and vs < V_RES / 2 + 200
-      ) then
-        red <= (others => '1');
-      end if;
+      -- red <= (others => '0');
+      -- green <= (others => '0');
+      -- blue <= (others => '0');
+      -- -- Test generation pattern
+      -- if (  hs > H_RES / 2 - 200
+      --   and hs < H_RES / 2 + 200
+      --   and vs > V_RES / 2 - 200
+      --   and vs < V_RES / 2 + 200
+      -- ) then
+      --   red <= (others => '1');
+      -- end if;
 
       -- Horizontal Sync Pulse
       if (hs < H_RES + H_FRONT_PORCH or hs > H_RES + H_FRONT_PORCH + H_SYNC_PULSE) then

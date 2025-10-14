@@ -3,7 +3,8 @@ use ieee.std_logic_1164.all;
 
 entity astrogate_top is
   generic (
-    VGA_OUTPUT_DEPTH_G : integer := 4
+    VGA_OUTPUT_DEPTH_G : integer := 4;
+    FRAME_BUFFER_BIT_DEPTH_G : integer := 16
   );
   port (
          -- Global Clock
@@ -48,9 +49,9 @@ architecture rtl of astrogate_top is
   signal pixel_data : std_logic_vector(15 downto 0) := (others => '0');
   signal pixel_data_byte : std_logic_vector(7 downto 0) := (others => '0');
   signal wea : std_logic_vector(0 downto 0) := (others => '0');
-  signal addra : std_logic_vector(18 downto 0) := (others => '0');
+  signal addra : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
   signal dina : std_logic_vector(11 downto 0) := (others => '0');
-  signal addrb : std_logic_vector(18 downto 0) := (others => '0');
+  signal addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
   signal doutb : std_logic_vector(11 downto 0) := (others => '0');
 
   signal frame_finished : std_logic := '0';
@@ -139,6 +140,9 @@ begin
 
 
    ov7670_capture : entity work.ov7670_capture(rtl) 
+    generic map(
+      FRAME_BUFFER_BIT_DEPTH_G =>  16
+    )
     port map(
       clk => clk,
       rst => rst,
