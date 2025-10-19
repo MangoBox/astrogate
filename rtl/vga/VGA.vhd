@@ -29,6 +29,10 @@ architecture Behavioral of VGA is
   -- Colour is currently writable to the display
   signal is_addressable : std_logic := '0';
 
+  signal counter : natural := 0;
+  constant COUNTER_NEXT : natural := 25e6;
+  signal test_channel : natural := 0;
+
   -- Horizontal sync res
   constant H_RES : natural         := 640;
   constant H_FRONT_PORCH : natural := 16;
@@ -68,17 +72,38 @@ begin
   process (clk25)
   begin
     if rising_edge(clk25) then
+      -- Increment counter
+      if counter < COUNTER_NEXT then
+        counter <= counter + 1;
+      else
+        counter <= 0;
+        -- NOTE: An inferred latch but we don't care what it starts out as.
+        test_channel <= (test_channel + 1) mod 3;
+      end if;
       -- Background colour
       red <= (others => '0');
       green <= (others => '0');
       blue <= (others => '0');
       -- Test generation pattern
-      if (  hs > H_RES / 2 - 200
-        and hs < H_RES / 2 + 200
-        and vs > V_RES / 2 - 200
-        and vs < V_RES / 2 + 200
-      ) then
-        red <= (others => '1');
+      -- if (  hs > H_RES / 2 - 200
+      --   and hs < H_RES / 2 + 200
+      --   and vs > V_RES / 2 - 200
+      --   and vs < V_RES / 2 + 200
+      -- ) then
+      --   red <= "001";
+      --   green <= (others => '1');
+      --   blue <= (others => '1');
+      -- end if;
+      if test_channel = 0 then
+        red <= std_logic_vector(to_unsigned(hs / 32, 3));
+        blue <= std_logic_vector(to_unsigned(vs / 32, 3));
+        green <= std_logic_vector(to_unsigned((hs + vs) / 16, 3));
+      end if;
+      if test_channel = 1 then
+        green <= std_logic_vector(to_unsigned(hs / 32, 3));
+      end if;
+      if test_channel = 2 then
+        blue <= std_logic_vector(to_unsigned(hs / 32, 3));
       end if;
 
       -- Horizontal Sync Pulse
