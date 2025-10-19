@@ -48,8 +48,8 @@ set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_location_assignment PIN_25 -to rst
 set_location_assignment PIN_23 -to clk
-set_location_assignment PIN_101 -to vga_hsync
-set_location_assignment PIN_103 -to vga_vsync
+set_location_assignment PIN_34 -to vga_hsync
+set_location_assignment PIN_32 -to vga_vsync
 set_global_assignment -name ENABLE_OCT_DONE OFF
 set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
 set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
@@ -74,17 +74,17 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id VGA
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME tb_VGA -section_id VGA
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_TEST_BENCH_FILE tb_VGA.vhd -section_id VGA
-set_location_assignment PIN_50 -to vga_blue[0]
-set_location_assignment PIN_51 -to vga_blue[1]
-set_location_assignment PIN_52 -to vga_blue[2]
+set_location_assignment PIN_42 -to vga_blue[0]
+set_location_assignment PIN_43 -to vga_blue[1]
+set_location_assignment PIN_44 -to vga_blue[2]
 set_location_assignment PIN_53 -to vga_blue[3]
-set_location_assignment PIN_64 -to vga_green[0]
-set_location_assignment PIN_65 -to vga_green[1]
-set_location_assignment PIN_66 -to vga_green[2]
+set_location_assignment PIN_33 -to vga_green[0]
+set_location_assignment PIN_38 -to vga_green[1]
+set_location_assignment PIN_39 -to vga_green[2]
 set_location_assignment PIN_67 -to vga_green[3]
-set_location_assignment PIN_84 -to vga_red[0]
-set_location_assignment PIN_85 -to vga_red[1]
-set_location_assignment PIN_86 -to vga_red[2]
+set_location_assignment PIN_28 -to vga_red[0]
+set_location_assignment PIN_30 -to vga_red[1]
+set_location_assignment PIN_31 -to vga_red[2]
 set_location_assignment PIN_87 -to vga_red[3]
 set_global_assignment -name VHDL_FILE rtl/vga/VGA.vhd
 set_global_assignment -name VHDL_FILE astrogate_top.vhd

@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity astrogate_top is
   generic (
-    VGA_OUTPUT_DEPTH_G : integer := 4
+    VGA_OUTPUT_DEPTH_G : integer := 3
   );
   port (
          -- Global Clock
