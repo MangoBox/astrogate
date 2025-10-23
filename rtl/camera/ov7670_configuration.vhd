@@ -7,7 +7,6 @@ entity ov7670_configuration is
     port (
         clk : in std_logic;
         rst : in std_logic;
-        edge : in std_logic_vector(3 downto 0);
         sda : inout std_logic;
         scl : inout std_logic;
         start : in std_logic;

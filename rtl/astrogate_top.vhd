@@ -26,16 +26,16 @@ entity astrogate_top is
          ov7670_pclk : in std_logic;
          ov7670_xclk : out std_logic;
          ov7670_data : in std_logic_vector(7 downto 0);
-         sw : in std_logic_vector(3 downto 0);
+         --sw : in std_logic_vector(3 downto 0);
          ov7670_pwdn : out std_logic;
-         ov7670_reset : out std_logic
+         ov7670_reset : out std_logic;
+         btn : in std_logic_vector(3 downto 0)
        );
 end astrogate_top;
 
 architecture rtl of astrogate_top is
   signal rst : std_logic := '0';
   signal uart_byte_tx : std_logic_vector(7 downto 0) := (others => '0');
-  signal edge : std_logic_vector(3 downto 0) := (others => '0');
 
   signal config_finished : std_logic := '0';
 
@@ -47,12 +47,15 @@ architecture rtl of astrogate_top is
   signal xclk_ov7670 : std_logic := '0';
 
   signal pixel_data : std_logic_vector(15 downto 0) := (others => '0');
-  signal pixel_data_byte : std_logic_vector(7 downto 0) := (others => '0');
+  -- signal pixel_data_byte : std_logic_vector(7 downto 0) := (others => '0');
+  signal vga_data : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
   signal wea : std_logic_vector(0 downto 0) := (others => '0');
   signal addra : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
   signal dina : std_logic_vector(11 downto 0) := (others => '0');
   signal addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
   signal doutb : std_logic_vector(11 downto 0) := (others => '0');
+
+  signal edge : std_logic_vector(3 downto 0) := (others => '0');
 
   signal frame_finished : std_logic := '0';
 begin
@@ -80,8 +83,9 @@ begin
 
   ov7670_xclk <= xclk_ov7670;
 
-  pixel_data_byte <= pixel_data(15 DOWNTO 8) WHEN sw(0) = '0' ELSE
-      pixel_data(7 DOWNTO 0);
+  -- pixel_data_byte <= pixel_data(15 DOWNTO 8) WHEN sw(0) = '0' ELSE
+  --     pixel_data(7 DOWNTO 0);
+
 
   -- Generates the xclk nessecary for the OV7670's xclk pin
   ov7670_pll_inst : work.ov7670_pll port map (
@@ -96,6 +100,12 @@ begin
     c0 => vga_clk,
     locked => open,
     areset => '0' -- Don't ever reset PLL
+  );
+
+  edge_detect : entity work.debounce(behavioral) port map(
+    clk => clk,
+    btn => btn,
+    edge => edge
   );
 
   framebuffer_inst : work.framebuffer PORT MAP (
@@ -128,7 +138,6 @@ begin
         clk => clk,
         rst => rst,
         sda => sda,
-        edge => edge,
         scl => scl,
         ov7670_reset => ov7670_reset,
         start => edge(0),
