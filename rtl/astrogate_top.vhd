@@ -34,6 +34,8 @@ entity astrogate_top is
 end astrogate_top;
 
 architecture rtl of astrogate_top is
+  constant VGA_TOTAL_DEPTH_C : integer := VGA_OUTPUT_DEPTH_G * 3;
+
   signal rst : std_logic := '0';
   signal uart_byte_tx : std_logic_vector(7 downto 0) := (others => '0');
 
@@ -51,9 +53,9 @@ architecture rtl of astrogate_top is
   signal vga_data : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
   signal wea : std_logic_vector(0 downto 0) := (others => '0');
   signal addra : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
-  signal dina : std_logic_vector(11 downto 0) := (others => '0');
+  signal dina : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '0');
   signal addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
-  signal doutb : std_logic_vector(11 downto 0) := (others => '0');
+  signal doutb : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '0');
 
   signal edge : std_logic_vector(3 downto 0) := (others => '0');
 
@@ -122,7 +124,8 @@ begin
   -- Instantiate VGA output
   e_vga_output : entity work.VGA
     generic map (
-      VGA_OUTPUT_DEPTH_G => VGA_OUTPUT_DEPTH_G
+      VGA_OUTPUT_DEPTH_G => VGA_OUTPUT_DEPTH_G,
+      FRAME_BUFFER_BIT_DEPTH_G => FRAME_BUFFER_BIT_DEPTH_G
     ) 
     port map (
       i_clk25 => vga_clk,
@@ -130,7 +133,9 @@ begin
       o_green => vga_green,
       o_blue => vga_blue,
       o_hs => vga_hsync,
-      o_vs => vga_vsync
+      o_vs => vga_vsync,
+      i_doutb => doutb,
+      o_addrb => addrb
    );
 
    ov7670_configuration : entity work.ov7670_configuration(behavioral)
@@ -150,7 +155,8 @@ begin
 
    ov7670_capture : entity work.ov7670_capture(rtl) 
     generic map(
-      FRAME_BUFFER_BIT_DEPTH_G =>  16
+      FRAME_BUFFER_BIT_DEPTH_G =>  16,
+      VGA_OUTPUT_DEPTH_G => 9
     )
     port map(
       clk => clk,

@@ -5,19 +5,25 @@ use ieee.numeric_std.all;
 entity VGA is
   generic(
     sync_polarity : std_logic := '1';
-    VGA_OUTPUT_DEPTH_G : integer := 4
-     );
+    VGA_OUTPUT_DEPTH_G : integer := 3;
+    VGA_TOTAL_DEPTH_C : integer := 9;
+    FRAME_BUFFER_BIT_DEPTH_G : integer := 16
+    );
   port(
        i_clk25: in std_logic;
        o_red:   out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
        o_green: out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
        o_blue:  out std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0);
        o_hs:    out std_logic;
-       o_vs:    out std_logic
+       o_vs:    out std_logic;
+       -- frame buffer read/wr signals
+       o_addrb : out std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0);
+       i_doutb : in std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0)
      );
 end VGA;
 
 architecture Behavioral of VGA is
+
   signal hs : natural := 0;
   signal vs : natural := 0;
 
@@ -60,13 +66,13 @@ begin
   begin
     if rising_edge(i_clk25) then
       -- Increment counter
-      if counter < COUNTER_NEXT then
-        counter <= counter + 1;
-      else
-        counter <= 0;
-        -- NOTE: An inferred latch but we don't care what it starts out as.
-        test_channel <= (test_channel + 1) mod 3;
-      end if;
+      -- if counter < COUNTER_NEXT then
+      --   counter <= counter + 1;
+      -- else
+      --   counter <= 0;
+      --   -- NOTE: An inferred latch but we don't care what it starts out as.
+      --   test_channel <= (test_channel + 1) mod 4;
+      -- end if;
       -- Background colour
       red <= (others => '0');
       green <= (others => '0');
@@ -83,18 +89,21 @@ begin
       --   green <= (others => '1');
       --   blue <= (others => '1');
       -- end if;
-      if test_channel = 0 then
-        red <= std_logic_vector(to_unsigned(hs / 32, 3));
-        blue <= std_logic_vector(to_unsigned(vs / 32, 3));
-        green <= std_logic_vector(to_unsigned((hs + vs) / 16, 3));
-      end if;
-      if test_channel = 1 then
-        green <= std_logic_vector(to_unsigned(hs / 32, 3));
-      end if;
-      if test_channel = 2 then
-        blue <= std_logic_vector(to_unsigned(hs / 32, 3));
-      end if;
+      -- if test_channel = 0 then
+      --   red <= std_logic_vector(to_unsigned(hs / 32, 3));
+      --   blue <= std_logic_vector(to_unsigned(vs / 32, 3));
+      --   green <= std_logic_vector(to_unsigned((hs + vs) / 16, 3));
+      -- end if;
+      -- if test_channel = 1 then
+      --   green <= std_logic_vector(to_unsigned(hs / 32, 3));
+      -- end if;
+      -- if test_channel = 2 then
+      --   blue <= std_logic_vector(to_unsigned(hs / 32, 3));
+      -- end if;
 
+      red <= i_doutb((VGA_OUTPUT_DEPTH_G * 3) - 1 downto (VGA_OUTPUT_DEPTH_G * 2));
+      green <= i_doutb((VGA_OUTPUT_DEPTH_G * 2) - 1 downto VGA_OUTPUT_DEPTH_G);
+      blue <= i_doutb(VGA_OUTPUT_DEPTH_G - 1 downto 0);
       -- Horizontal Sync Pulse
       if (hs < H_RES + H_FRONT_PORCH or hs > H_RES + H_FRONT_PORCH + H_SYNC_PULSE) then
         o_hs <= sync_polarity;

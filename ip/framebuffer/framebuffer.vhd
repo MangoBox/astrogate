@@ -43,23 +43,23 @@ USE altera_mf.altera_mf_components.all;
 ENTITY framebuffer IS
 	PORT
 	(
-		data		: IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+		data		: IN STD_LOGIC_VECTOR (8 DOWNTO 0);
 		rdaddress		: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
 		rdclock		: IN STD_LOGIC ;
 		wraddress		: IN STD_LOGIC_VECTOR (15 DOWNTO 0);
 		wrclock		: IN STD_LOGIC  := '1';
 		wren		: IN STD_LOGIC  := '0';
-		q		: OUT STD_LOGIC_VECTOR (11 DOWNTO 0)
+		q		: OUT STD_LOGIC_VECTOR (8 DOWNTO 0)
 	);
 END framebuffer;
 
 
 ARCHITECTURE SYN OF framebuffer IS
 
-	SIGNAL sub_wire0	: STD_LOGIC_VECTOR (11 DOWNTO 0);
+	SIGNAL sub_wire0	: STD_LOGIC_VECTOR (8 DOWNTO 0);
 
 BEGIN
-	q    <= sub_wire0(11 DOWNTO 0);
+	q    <= sub_wire0(8 DOWNTO 0);
 
 	altsyncram_component : altsyncram
 	GENERIC MAP (
@@ -78,8 +78,8 @@ BEGIN
 		power_up_uninitialized => "FALSE",
 		widthad_a => 16,
 		widthad_b => 16,
-		width_a => 12,
-		width_b => 12,
+		width_a => 9,
+		width_b => 9,
 		width_byteena_a => 1
 	)
 	PORT MAP (
@@ -105,7 +105,7 @@ END SYN;
 -- Retrieval info: PRIVATE: BYTEENA_ACLR_B NUMERIC "0"
 -- Retrieval info: PRIVATE: BYTE_ENABLE_A NUMERIC "0"
 -- Retrieval info: PRIVATE: BYTE_ENABLE_B NUMERIC "0"
--- Retrieval info: PRIVATE: BYTE_SIZE NUMERIC "8"
+-- Retrieval info: PRIVATE: BYTE_SIZE NUMERIC "9"
 -- Retrieval info: PRIVATE: BlankMemory NUMERIC "1"
 -- Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_A NUMERIC "0"
 -- Retrieval info: PRIVATE: CLOCK_ENABLE_INPUT_B NUMERIC "0"
@@ -129,7 +129,7 @@ END SYN;
 -- Retrieval info: PRIVATE: JTAG_ENABLED NUMERIC "0"
 -- Retrieval info: PRIVATE: JTAG_ID STRING "NONE"
 -- Retrieval info: PRIVATE: MAXIMUM_DEPTH NUMERIC "0"
--- Retrieval info: PRIVATE: MEMSIZE NUMERIC "786432"
+-- Retrieval info: PRIVATE: MEMSIZE NUMERIC "589824"
 -- Retrieval info: PRIVATE: MEM_IN_BITS NUMERIC "0"
 -- Retrieval info: PRIVATE: MIFfilename STRING ""
 -- Retrieval info: PRIVATE: OPERATION_MODE NUMERIC "2"
@@ -149,10 +149,10 @@ END SYN;
 -- Retrieval info: PRIVATE: USE_DIFF_CLKEN NUMERIC "0"
 -- Retrieval info: PRIVATE: UseDPRAM NUMERIC "1"
 -- Retrieval info: PRIVATE: VarWidth NUMERIC "0"
--- Retrieval info: PRIVATE: WIDTH_READ_A NUMERIC "12"
--- Retrieval info: PRIVATE: WIDTH_READ_B NUMERIC "12"
--- Retrieval info: PRIVATE: WIDTH_WRITE_A NUMERIC "12"
--- Retrieval info: PRIVATE: WIDTH_WRITE_B NUMERIC "12"
+-- Retrieval info: PRIVATE: WIDTH_READ_A NUMERIC "9"
+-- Retrieval info: PRIVATE: WIDTH_READ_B NUMERIC "9"
+-- Retrieval info: PRIVATE: WIDTH_WRITE_A NUMERIC "9"
+-- Retrieval info: PRIVATE: WIDTH_WRITE_B NUMERIC "9"
 -- Retrieval info: PRIVATE: WRADDR_ACLR_B NUMERIC "0"
 -- Retrieval info: PRIVATE: WRADDR_REG_B NUMERIC "0"
 -- Retrieval info: PRIVATE: WRCTRL_ACLR_B NUMERIC "0"
@@ -174,11 +174,11 @@ END SYN;
 -- Retrieval info: CONSTANT: POWER_UP_UNINITIALIZED STRING "FALSE"
 -- Retrieval info: CONSTANT: WIDTHAD_A NUMERIC "16"
 -- Retrieval info: CONSTANT: WIDTHAD_B NUMERIC "16"
--- Retrieval info: CONSTANT: WIDTH_A NUMERIC "12"
--- Retrieval info: CONSTANT: WIDTH_B NUMERIC "12"
+-- Retrieval info: CONSTANT: WIDTH_A NUMERIC "9"
+-- Retrieval info: CONSTANT: WIDTH_B NUMERIC "9"
 -- Retrieval info: CONSTANT: WIDTH_BYTEENA_A NUMERIC "1"
--- Retrieval info: USED_PORT: data 0 0 12 0 INPUT NODEFVAL "data[11..0]"
--- Retrieval info: USED_PORT: q 0 0 12 0 OUTPUT NODEFVAL "q[11..0]"
+-- Retrieval info: USED_PORT: data 0 0 9 0 INPUT NODEFVAL "data[8..0]"
+-- Retrieval info: USED_PORT: q 0 0 9 0 OUTPUT NODEFVAL "q[8..0]"
 -- Retrieval info: USED_PORT: rdaddress 0 0 16 0 INPUT NODEFVAL "rdaddress[15..0]"
 -- Retrieval info: USED_PORT: rdclock 0 0 0 0 INPUT NODEFVAL "rdclock"
 -- Retrieval info: USED_PORT: wraddress 0 0 16 0 INPUT NODEFVAL "wraddress[15..0]"
@@ -188,9 +188,9 @@ END SYN;
 -- Retrieval info: CONNECT: @address_b 0 0 16 0 rdaddress 0 0 16 0
 -- Retrieval info: CONNECT: @clock0 0 0 0 0 wrclock 0 0 0 0
 -- Retrieval info: CONNECT: @clock1 0 0 0 0 rdclock 0 0 0 0
--- Retrieval info: CONNECT: @data_a 0 0 12 0 data 0 0 12 0
+-- Retrieval info: CONNECT: @data_a 0 0 9 0 data 0 0 9 0
 -- Retrieval info: CONNECT: @wren_a 0 0 0 0 wren 0 0 0 0
--- Retrieval info: CONNECT: q 0 0 12 0 @q_b 0 0 12 0
+-- Retrieval info: CONNECT: q 0 0 9 0 @q_b 0 0 9 0
 -- Retrieval info: GEN_FILE: TYPE_NORMAL framebuffer.vhd TRUE
 -- Retrieval info: GEN_FILE: TYPE_NORMAL framebuffer.inc FALSE
 -- Retrieval info: GEN_FILE: TYPE_NORMAL framebuffer.cmp TRUE
