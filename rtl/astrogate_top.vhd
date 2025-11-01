@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity astrogate_top is
   generic (
-    FRAME_BUFFER_BIT_DEPTH_G : integer := 16;
+    FRAME_BUFFER_BIT_DEPTH_G : integer := 15;
     VGA_OUTPUT_DEPTH_G : integer := 3
   );
   port (
@@ -143,7 +143,7 @@ begin
     );
 
   dina <= pixel_data(8 downto 0);
-  leds(3 downto 0) <= doutb(8 downto 5);
+  -- leds(3 downto 0) <= doutb(8 downto 5);
 
   framebuffer_inst : work.framebuffer PORT MAP (
     -- Write clock domain (PClk @ 24MHz)

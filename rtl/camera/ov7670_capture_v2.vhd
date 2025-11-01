@@ -38,7 +38,7 @@ architecture rtl of ov7670_capture_v2 is
     signal x_count_int : integer := 0;
     signal y_count_int : integer := 0;
     --
-    signal write_addr : integer := 0;
+    signal write_addr : unsigned(RAM_ADDRESS_WIDTH - 1 downto 0);
 begin
 
     -------------------------------------------------------------------
@@ -84,26 +84,27 @@ begin
     process(cam_pclk)
     begin
         if rising_edge(cam_pclk) then
-            if cam_vsync = '1' then
-                y_count_int <= 0;
-                x_count_int <= 0;
-            elsif cam_href = '1' then
-                if pixel_valid_int = '1' then
-                    x_count_int <= x_count_int + 1;
-                    -- Do we need this?
-                    -- Shouldn't Vsync auto reset?
-                    if x_count_int = VGA_WIDTH-1 then
-                        x_count_int <= 0;
-                        y_count_int <= y_count_int + 1;
-                    end if;
-                end if;
-            end if;
+          if cam_vsync = '1' then
+              y_count_int <= 0;
+              x_count_int <= 0;
+          elsif cam_href = '1' then
+              if pixel_valid_int = '1' then
+                  x_count_int <= x_count_int + 1;
+                  -- Do we need this?
+                  -- Shouldn't Vsync auto reset?
+                  if x_count_int = VGA_WIDTH-1 then
+                      x_count_int <= 0;
+                      y_count_int <= y_count_int + 1;
+                  end if;
+              end if;
+          end if;
         end if;
     end process;
 
     -- Packing RAM address
-    write_addr <= x_count_int + (VGA_WIDTH * y_count_int);
-    ram_addr <= std_logic_vector(to_unsigned(write_addr, RAM_ADDRESS_WIDTH));
+    -- write_addr <= x_count_int + (VGA_WIDTH * y_count_int);
+    write_addr <= shift_right(to_unsigned(x_count_int + (VGA_WIDTH * y_count_int), RAM_ADDRESS_WIDTH),2);
+    ram_addr <= std_logic_vector(write_addr);
 
     -------------------------------------------------------------------
     -- Output assignments

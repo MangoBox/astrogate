@@ -36,10 +36,6 @@ architecture Behavioral of VGA is
   -- Colour is currently writable to the display
   signal is_addressable : std_logic := '0';
 
-  signal counter : natural := 0;
-  constant COUNTER_NEXT : natural := 25e6;
-  signal test_channel : natural := 0;
-
   -- Horizontal sync res
   constant H_RES : natural         := 640;
   constant H_FRONT_PORCH : natural := 16;
@@ -65,7 +61,8 @@ begin
     hs < H_RES else '0';
 
   -- Address calculation
-  o_addrb <= std_logic_vector(to_unsigned((i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G));
+  o_addrb <= std_logic_vector(shift_right(to_unsigned(
+      (i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G), 2));
 
   process (i_clk25)
   begin
