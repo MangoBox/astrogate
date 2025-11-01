@@ -42,34 +42,27 @@ architecture rtl of astrogate_top is
 
   signal config_finished : std_logic := '0';
 
-  -- signal buf1_vsync, buf2_vsync, buf1_href, buf2_href : std_logic := '0';
-  -- signal buf1_pclk, buf2_pclk : std_logic := '0';
-  -- signal buf1_data, buf2_data : std_logic_vector(7 downto 0) := (others => '0');
-  signal xclk_vsync, xclk_href : std_logic := '0';
-  signal xclk_data : std_logic_vector(7 downto 0);
-
   signal vga_clk : std_logic := '0';
   signal xclk_ov7670 : std_logic := '0';
 
   signal pixel_data : std_logic_vector(15 downto 0) := (others => '0');
   -- signal pixel_data_byte : std_logic_vector(7 downto 0) := (others => '0');
-  signal wea : std_logic_vector(0 downto 0) := (others => '0');
-  signal addra : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
-  signal dina : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '1');
-  signal addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
-  signal doutb : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '0');
+  signal wea : std_logic_vector(0 downto 0);
+  signal addra : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0);
+  signal dina : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0);
+  signal addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0);
+  signal doutb : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0);
 
   signal edge : std_logic_vector(3 downto 0) := (others => '0');
   signal btn : std_logic_vector(3 downto 0) := (others => '0');
   signal leds : std_logic_vector(3 downto 0) := (others => '0');
 
-  signal frame_finished : std_logic := '0';
-
+  signal x_count : integer;
+  signal y_count : integer;
 begin
   
   leds_n <= not leds;
   btn <= not btn_n;
-  leds <= pixel_data(3 downto 0);
 
   ov7670_pwdn <= '0'; -- Power device up
   rst <= not rst_n; -- Active low reset for Cyclone IV board
@@ -111,7 +104,9 @@ begin
       o_hs => vga_hsync,
       o_vs => vga_vsync,
       i_doutb => doutb,
-      o_addrb => addrb
+      o_addrb => addrb,
+      i_count_x => x_count,
+      i_count_y => y_count
    );
 
    ov7670_configuration : entity work.ov7670_configuration(behavioral)
@@ -135,50 +130,31 @@ begin
     port map(
       -- Input Data
       cam_pclk => ov7670_pclk,
-      cam_vsync => ov7670_href,
+      cam_vsync => ov7670_vsync,
       cam_href => ov7670_href,
       cam_data => ov7670_data,
       -- Output stream 
       pixel_clk => open, -- Same as cam_pclk
       pixel_valid => wea(0),
-      pixel_data(8 downto 0) => dina, -- Only keep bottom 9 pixels.
-      ram_addr => addra
+      pixel_data => pixel_data, -- Only keep bottom 9 pixels.
+      ram_addr => addra,
+      x_count => x_count,
+      y_count => y_count
     );
 
+  dina <= pixel_data(8 downto 0);
+  leds(3 downto 0) <= doutb(8 downto 5);
+
   framebuffer_inst : work.framebuffer PORT MAP (
-    -- Write clock domain (FPGA @ 50MHz)
+    -- Write clock domain (PClk @ 24MHz)
 		wraddress	 => addra,
 		wrclock	 => ov7670_pclk,
-		wren	 => wea(0),
+		wren	 => '1',
 		data	 => dina,
     -- Read clock domain (VGA @ 25MHz)
 		rdaddress	 => addrb,
 		rdclock	 => vga_clk,
 		q	 => doutb
 	);
-
-   -- ov7670_capture : entity work.ov7670_capture(rtl) 
-   --  generic map(
-   --    FRAME_BUFFER_BIT_DEPTH_G =>  16,
-   --    VGA_OUTPUT_DEPTH_G => 9
-   --  )
-   --  port map(
-   --    clk => clk,
-   --    rst => rst,
-   --    config_finished => '1',
-   --    -- Note: We are using our internally-generated XCLK
-   --    ov7670_vsync => xclk_vsync,
-   --    ov7670_href => xclk_href,
-   --    ov7670_pclk => xclk_ov7670,
-   --    ov7670_data => xclk_data,
-   --    frame_finished_o => frame_finished,
-   --    pixel_data => pixel_data,
-   --    start => '1',
-
-   --    --frame_buffer signals
-   --    wea => wea,
-   --    dina => dina,
-   --    addra => addra
-   --  );
 
 end rtl;

@@ -18,7 +18,9 @@ entity VGA is
        o_vs:    out std_logic;
        -- frame buffer read/wr signals
        o_addrb : out std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0);
-       i_doutb : in std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0)
+       i_doutb : in std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0);
+       i_count_x : in integer;
+       i_count_y : in integer
      );
 end VGA;
 
@@ -61,6 +63,9 @@ begin
   is_addressable <= '1' when
     vs < V_RES and
     hs < H_RES else '0';
+
+  -- Address calculation
+  o_addrb <= std_logic_vector(to_unsigned((i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G));
 
   process (i_clk25)
   begin

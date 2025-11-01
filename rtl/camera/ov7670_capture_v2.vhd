@@ -17,13 +17,15 @@ entity ov7670_capture_v2 is
 
         -- Output pixel stream
         pixel_clk   : out std_logic;            -- Same as cam_pclk (for FIFO)
-        pixel_valid : buffer std_logic;            -- High for one clock when pixel_data is valid
+        pixel_valid : out std_logic;            -- High for one clock when pixel_data is valid
         pixel_data  : out std_logic_vector(15 downto 0); -- RGB565 pixel
         frame_valid : out std_logic;            -- High during active frame (vsync low)
         line_valid  : out std_logic;             -- High during active line (href high)
 
         -- Positional data
-        ram_addr : out std_logic_vector(RAM_ADDRESS_WIDTH - 1 downto 0) 
+        ram_addr : out std_logic_vector(RAM_ADDRESS_WIDTH - 1 downto 0);
+        x_count : out integer := 0;
+        y_count : out integer := 0
     );
 end entity ov7670_capture_v2;
 
@@ -33,9 +35,9 @@ architecture rtl of ov7670_capture_v2 is
     signal pixel_valid_int : std_logic := '0';
     signal frame_valid_int : std_logic := '0';
     signal line_valid_int  : std_logic := '0';
+    signal x_count_int : integer := 0;
+    signal y_count_int : integer := 0;
     --
-    signal x_count : integer := 0;
-    signal y_count : integer := 0;
     signal write_addr : integer := 0;
 begin
 
@@ -83,16 +85,16 @@ begin
     begin
         if rising_edge(cam_pclk) then
             if cam_vsync = '1' then
-                y_count <= 0;
-                x_count <= 0;
+                y_count_int <= 0;
+                x_count_int <= 0;
             elsif cam_href = '1' then
-                if pixel_valid = '1' then
-                    x_count <= x_count + 1;
+                if pixel_valid_int = '1' then
+                    x_count_int <= x_count_int + 1;
                     -- Do we need this?
                     -- Shouldn't Vsync auto reset?
-                    if x_count = VGA_WIDTH-1 then
-                        x_count <= 0;
-                        y_count <= y_count + 1;
+                    if x_count_int = VGA_WIDTH-1 then
+                        x_count_int <= 0;
+                        y_count_int <= y_count_int + 1;
                     end if;
                 end if;
             end if;
@@ -100,7 +102,7 @@ begin
     end process;
 
     -- Packing RAM address
-    write_addr <= x_count + (VGA_HEIGHT * y_count);
+    write_addr <= x_count_int + (VGA_WIDTH * y_count_int);
     ram_addr <= std_logic_vector(to_unsigned(write_addr, RAM_ADDRESS_WIDTH));
 
     -------------------------------------------------------------------
@@ -111,5 +113,7 @@ begin
     frame_valid <= frame_valid_int;
     line_valid  <= line_valid_int;
     pixel_clk   <= cam_pclk;  -- pass through for FIFO write domain
+    y_count <= y_count_int;
+    x_count <= x_count_int;
 
 end architecture rtl;
