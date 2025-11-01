@@ -29,7 +29,8 @@ entity astrogate_top is
          --sw : in std_logic_vector(3 downto 0);
          ov7670_pwdn : out std_logic;
          ov7670_reset : out std_logic;
-         btn : in std_logic_vector(3 downto 0)
+         btn_n : in std_logic_vector(3 downto 0);
+         leds_n : out std_logic_vector(3 downto 0)
        );
 end astrogate_top;
 
@@ -41,53 +42,75 @@ architecture rtl of astrogate_top is
 
   signal config_finished : std_logic := '0';
 
-  signal buf1_vsync, buf2_vsync, buf1_href, buf2_href : std_logic := '0';
-  signal buf1_pclk, buf2_pclk : std_logic := '0';
-  signal buf1_data, buf2_data : std_logic_vector(7 downto 0) := (others => '0');
+  -- signal buf1_vsync, buf2_vsync, buf1_href, buf2_href : std_logic := '0';
+  -- signal buf1_pclk, buf2_pclk : std_logic := '0';
+  -- signal buf1_data, buf2_data : std_logic_vector(7 downto 0) := (others => '0');
+  signal xclk_vsync, xclk_href : std_logic := '0';
+  signal xclk_data : std_logic_vector(7 downto 0);
 
   signal vga_clk : std_logic := '0';
   signal xclk_ov7670 : std_logic := '0';
 
   signal pixel_data : std_logic_vector(15 downto 0) := (others => '0');
   -- signal pixel_data_byte : std_logic_vector(7 downto 0) := (others => '0');
-  signal vga_data : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
   signal wea : std_logic_vector(0 downto 0) := (others => '0');
   signal addra : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
-  signal dina : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '0');
+  signal dina : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '1');
   signal addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
   signal doutb : std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0) := (others => '0');
 
   signal edge : std_logic_vector(3 downto 0) := (others => '0');
+  signal btn : std_logic_vector(3 downto 0) := (others => '0');
+  signal leds : std_logic_vector(3 downto 0) := (others => '0');
 
   signal frame_finished : std_logic := '0';
+
+  -- FIFO split in/out signals
+  signal ov7670_fifo_in : std_logic_vector(9 downto 0);
+  signal ov7670_fifo_reg : std_logic_vector(9 downto 0);
+  signal ov7670_fifo_out : std_logic_vector(9 downto 0);
 begin
+  
+  leds_n <= not leds;
+  btn <= not btn_n;
+  leds <= pixel_data(3 downto 0);
 
+  -- Fanning into the FIFO input port
+  ov7670_fifo_in(7 downto 0) <= ov7670_data(7 downto 0);
+  ov7670_fifo_in(8) <= ov7670_href;
+  ov7670_fifo_in(9) <= ov7670_vsync;
 
-  process (clk)
-    begin
-      if rising_edge(clk) then
-          buf1_vsync <= ov7670_vsync;
-          buf2_vsync <= buf1_vsync;
+  -- Fanning out from the FIFO output port
+  xclk_data <= ov7670_fifo_out(7 downto 0); 
+  xclk_href <= ov7670_fifo_out(8); 
+  xclk_vsync <= ov7670_fifo_out(9);
 
-          buf1_href <= ov7670_href;
-          buf2_href <= buf1_href;
+  ov7670_fifo_inst : work.ov7670_fifo PORT MAP (
+    --- Ingress Domain
+		wrclk	 => ov7670_pclk,
+		wrreq	 => '1',
+		data	 => ov7670_fifo_in,
+		wrfull	 => open, -- Don't care about FIFO state
+    --- Egress Domain
+		rdclk	 => xclk_ov7670,
+		rdreq	 => '1',
+		q	 => ov7670_fifo_reg,
+		rdempty	=> open -- Don't care about FIFO state
+	);
 
-          buf1_pclk <= ov7670_pclk;
-          buf2_pclk <= buf1_pclk;
-
-          buf1_data <= ov7670_data;
-          buf2_data <= buf1_data;
-      end if;
+  -- Reg for output after FIFO
+  process(xclk_ov7670)
+  begin
+    if rising_edge(xclk_ov7670) then
+      ov7670_fifo_out <= ov7670_fifo_reg;
+    end if;
   end process;
+
 
   ov7670_pwdn <= '0'; -- Power device up
   rst <= not rst_n; -- Active low reset for Cyclone IV board
 
   ov7670_xclk <= xclk_ov7670;
-
-  -- pixel_data_byte <= pixel_data(15 DOWNTO 8) WHEN sw(0) = '0' ELSE
-  --     pixel_data(7 DOWNTO 0);
-
 
   -- Generates the xclk nessecary for the OV7670's xclk pin
   ov7670_pll_inst : work.ov7670_pll port map (
@@ -161,14 +184,15 @@ begin
     port map(
       clk => clk,
       rst => rst,
-      config_finished => config_finished,
-      ov7670_vsync => buf2_vsync,
-      ov7670_href => buf2_href,
-      ov7670_pclk => buf2_pclk,
-      ov7670_data => buf2_data,
+      config_finished => '1',
+      -- Note: We are using our internally-generated XCLK
+      ov7670_vsync => xclk_vsync,
+      ov7670_href => xclk_href,
+      ov7670_pclk => xclk_ov7670,
+      ov7670_data => xclk_data,
       frame_finished_o => frame_finished,
       pixel_data => pixel_data,
-      start => edge(3),
+      start => '1',
 
       --frame_buffer signals
       wea => wea,

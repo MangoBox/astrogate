@@ -41,6 +41,7 @@ set_time_format -unit ns -decimal_places 3
 
 create_clock -name {clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {clk}]
 create_clock -name {pclk} -period 41.666 -waveform { 0.000 20.833 } [get_ports {ov7670_pclk}]
+create_clock -name {xclk} -period 41.666 -waveform { 0.000 20.833 } [get_ports {ov7670_xclk}]
 
 
 #**************************************************************
@@ -49,6 +50,8 @@ create_clock -name {pclk} -period 41.666 -waveform { 0.000 20.833 } [get_ports {
 
 create_generated_clock -name {ov7670_pll_inst|altpll_component|auto_generated|pll1|clk[0]} -source [get_pins {ov7670_pll_inst|altpll_component|auto_generated|pll1|inclk[0]}] -duty_cycle 50/1 -multiply_by 12 -divide_by 25 -master_clock {clk} [get_pins {ov7670_pll_inst|altpll_component|auto_generated|pll1|clk[0]}] 
 create_generated_clock -name {vga_pll|altpll_component|auto_generated|pll1|clk[0]} -source [get_pins {vga_pll|altpll_component|auto_generated|pll1|inclk[0]}] -duty_cycle 50/1 -multiply_by 1 -divide_by 2 -master_clock {clk} [get_pins {vga_pll|altpll_component|auto_generated|pll1|clk[0]}] 
+derive_pll_clocks
+derive_clock_uncertainty
 
 
 #**************************************************************

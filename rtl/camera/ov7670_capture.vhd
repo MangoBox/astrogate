@@ -105,8 +105,7 @@ begin
     comb : process (reg, ov7670_data, pclk_edge, href_rising_edge, start, vsync_falling_edge, vsync_rising_edge, config_finished)
     begin
         reg_next <= reg;
-        frame_finished_o <= '0'; --debug
-        wea <= "0";
+        wea <= "1";
         dina <= (others => '0');
         case reg.state is
 
