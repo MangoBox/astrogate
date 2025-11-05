@@ -32,7 +32,7 @@ architecture Behavioral of VGA is
   signal red : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
   signal green : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
   signal blue : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
-
+  signal bram_address_reg, bram_address_next : unsigned(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0) := (others => '0');
   -- Colour is currently writable to the display
   signal is_addressable : std_logic := '0';
 
@@ -60,9 +60,14 @@ begin
     vs < V_RES and
     hs < H_RES else '0';
 
+  o_addrb <= std_logic_vector(bram_address_next);
+
   -- Address calculation
-  o_addrb <= std_logic_vector(shift_right(to_unsigned(
-      (i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G), 2));
+   --  o_addrb <= std_logic_vector(shift_right(to_unsigned(
+   --      (i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G), 2));
+  -- o_addrb <= std_logic_vector(to_unsigned(
+  --     (i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G
+  --     ));
 
   process (i_clk25)
   begin
@@ -121,11 +126,13 @@ begin
       end if;
 
       hs <= hs + 1;
+      bram_address_next <= bram_address_next + 1;
       if ( hs = H_CYCLES ) then
         vs <= vs + 1;
         hs <= 0;
       end if;
       if (vs = V_CYCLES) then                 
+        bram_address_next <= (others => '0');
         vs <= 0;
       end if;
     end if;

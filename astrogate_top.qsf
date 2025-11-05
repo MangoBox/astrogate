@@ -131,6 +131,7 @@ set_location_assignment PIN_89 -to btn_n[1]
 set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE stp2.stp
 set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to xclk_ov7670
+set_global_assignment -name ENABLE_LOGIC_ANALYZER_INTERFACE OFF
 set_global_assignment -name VHDL_FILE rtl/camera/ov7670_capture_v2.vhd
 set_global_assignment -name SDC_FILE impl/astrogate_top.out.sdc
 set_global_assignment -name VHDL_FILE rtl/debounce/debounce.vhd
