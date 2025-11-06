@@ -8,8 +8,6 @@ end entity;
 architecture sim of tb_VGA is
   -- Constants
   constant CLK_PERIOD : time := 40 ns;  -- 25 MHz clock
-
-  -- DUT generics (use defaults or override here)
   constant VGA_OUTPUT_DEPTH_G      : integer := 3;
   constant VGA_TOTAL_DEPTH_C       : integer := 9;
   constant FRAME_BUFFER_BIT_DEPTH_G: integer := 16;
@@ -23,7 +21,6 @@ architecture sim of tb_VGA is
   signal o_addrb : std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G-1 downto 0);
   signal i_doutb : std_logic_vector(VGA_TOTAL_DEPTH_C-1 downto 0);
 
-  -- Simulation control
   signal done : boolean := false;
 
 begin

@@ -1,0 +1,88 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="Page-1" id="khw-2ev__Yh6cipWTgqU">
+    <mxGraphModel dx="396" dy="236" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="gbDsffiTYdf_SddguMpB-2" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-3" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="170" as="sourcePoint" />
+            <mxPoint x="290" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-4" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="220" as="sourcePoint" />
+            <mxPoint x="290" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-5" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="110" y="250" as="sourcePoint" />
+            <mxPoint x="290" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-6" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;dashPattern=8 8;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="295" y="170" as="sourcePoint" />
+            <mxPoint x="110" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-7" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;dashPattern=8 8;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="290" y="220" as="sourcePoint" />
+            <mxPoint x="110" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-8" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-10" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-11" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-14" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-15" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-16" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-17" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-18" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-19" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-20" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-21" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="220" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-22" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-23" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-24" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="gbDsffiTYdf_SddguMpB-25" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="170" width="10" height="10" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
