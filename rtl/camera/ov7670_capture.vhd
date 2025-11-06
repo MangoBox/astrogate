@@ -9,7 +9,6 @@ entity ov7670_capture is
 
     );
     port (
-        clk : in std_logic;
         rst : in std_logic;
         config_finished : in std_logic;
 
@@ -85,9 +84,9 @@ begin
     pclk_edge <= '1' when pclk_reg = '0' and ov7670_pclk = '1' else --todo can external pclk be directly used as a clk? 
         '0';
 
-    sync : process (clk, rst)
+    sync : process (ov7670_pclk, rst)
     begin
-        if rising_edge(clk) then
+        if rising_edge(ov7670_pclk) then
             if rst = '1' then --todo tie reset to pll lock? 
                 reg <= init_reg_file;
                 vsync_reg <= '0';

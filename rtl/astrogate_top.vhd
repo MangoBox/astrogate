@@ -42,6 +42,8 @@ architecture rtl of astrogate_top is
   signal uart_byte_tx : std_logic_vector(7 downto 0) := (others => '0');
 
   signal config_finished : std_logic := '0';
+  signal config_finished_sync_1 : std_logic := '0';
+  signal config_finished_sync_2 : std_logic := '0';
 
   signal vga_clk : std_logic := '0';
   signal xclk_ov7670 : std_logic := '0';
@@ -60,22 +62,22 @@ architecture rtl of astrogate_top is
   signal btn : std_logic_vector(3 downto 0) := (others => '0');
   signal leds : std_logic_vector(3 downto 0) := (others => '0');
 
-  signal x_count : integer;
-  signal y_count : integer;
+  signal button_clks : std_logic_vector(3 downto 0) := (others => '0');
 begin
   
   leds_n <= not leds;
   btn <= not btn_n;
 
-  -- addra_div <= "00" & addra(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 2);
-  -- addrb_div <= "00" & addrb(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 2);
-  addra_div <= addra;
-  addrb_div <= addrb;
+  addra_div <= "00" & addra(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 2);
+  addrb_div <= "00" & addrb(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 2);
 
   ov7670_pwdn <= '0'; -- Power device up
   rst <= not rst_n; -- Active low reset for Cyclone IV board
 
   ov7670_xclk <= xclk_ov7670;
+
+  button_clks(0) <= clk;
+  button_clks(1) <= ov7670_pclk;
 
   -- Generates the xclk nessecary for the OV7670's xclk pin
   ov7670_pll_inst : work.ov7670_pll port map (
@@ -104,7 +106,7 @@ begin
   );
 
   edge_detect : entity work.debounce(behavioral) port map(
-    clk => clk,
+    clk => button_clks,
     btn => btn,
     edge => edge
   );
@@ -123,9 +125,7 @@ begin
       o_hs => vga_hsync,
       o_vs => vga_vsync,
       i_doutb => doutb,
-      o_addrb => addrb,
-      i_count_x => x_count,
-      i_count_y => y_count
+      o_addrb => addrb
    );
 
    ov7670_configuration : entity work.ov7670_configuration(behavioral)
@@ -141,6 +141,14 @@ begin
         config_finished => config_finished,
         reg_value => uart_byte_tx
     );
+
+  process(ov7670_pclk)
+  begin
+    if rising_edge(ov7670_pclk) then
+      config_finished_sync_1 <= config_finished;  -- may go metastable
+      config_finished_sync_2 <= config_finished_sync_1;     -- metastability settles here
+    end if;
+  end process;
     
    ov7670_capture : entity work.ov7670_capture(rtl) 
     generic map(
@@ -148,9 +156,8 @@ begin
       VGA_OUTPUT_DEPTH_G => VGA_TOTAL_DEPTH_C
     )
     port map(
-      clk => clk,
       rst => rst,
-      config_finished => '1',
+      config_finished => config_finished_sync_2,
       -- Note: We are using our internally-generated XCLK
       ov7670_vsync => ov7670_vsync,
       ov7670_href => ov7670_href,
@@ -169,7 +176,7 @@ begin
   framebuffer_inst : work.framebuffer PORT MAP (
     -- Write clock domain (PClk @ 24MHz)
 		wraddress	 => addra,
-		wrclock	 => clk,
+		wrclock	 => ov7670_pclk,
 		wren	 => wea(0),
 		data	 => dina,
     -- Read clock domain (VGA @ 25MHz)

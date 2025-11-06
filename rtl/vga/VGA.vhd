@@ -18,16 +18,16 @@ entity VGA is
        o_vs:    out std_logic;
        -- frame buffer read/wr signals
        o_addrb : out std_logic_vector(FRAME_BUFFER_BIT_DEPTH_G - 1 downto 0);
-       i_doutb : in std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0);
-       i_count_x : in integer;
-       i_count_y : in integer
+       i_doutb : in std_logic_vector(VGA_TOTAL_DEPTH_C - 1 downto 0)
      );
 end VGA;
 
 architecture Behavioral of VGA is
 
-  signal hs : natural := 0;
-  signal vs : natural := 0;
+  signal hs, hs_next : natural := 0;
+  signal vs, vs_next : natural := 0;
+
+  signal o_vs_next, o_hs_next : std_logic;
 
   signal red : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
   signal green : std_logic_vector(VGA_OUTPUT_DEPTH_G - 1 downto 0) := (others => '0');
@@ -60,81 +60,34 @@ begin
     vs < V_RES and
     hs < H_RES else '0';
 
-  o_addrb <= std_logic_vector(bram_address_next);
+  o_addrb <= std_logic_vector(bram_address_reg);
+  red <= i_doutb((VGA_OUTPUT_DEPTH_G * 3) - 1 downto (VGA_OUTPUT_DEPTH_G * 2));
+  green <= i_doutb((VGA_OUTPUT_DEPTH_G * 2) - 1 downto VGA_OUTPUT_DEPTH_G);
+  blue <= i_doutb(VGA_OUTPUT_DEPTH_G - 1 downto 0);
 
-  -- Address calculation
-   --  o_addrb <= std_logic_vector(shift_right(to_unsigned(
-   --      (i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G), 2));
-  -- o_addrb <= std_logic_vector(to_unsigned(
-  --     (i_count_y * H_RES) + i_count_x, FRAME_BUFFER_BIT_DEPTH_G
-  --     ));
-
-  process (i_clk25)
+  process(i_clk25)
   begin
-    if rising_edge(i_clk25) then
-      -- Increment counter
-      -- if counter < COUNTER_NEXT then
-      --   counter <= counter + 1;
-      -- else
-      --   counter <= 0;
-      --   -- NOTE: An inferred latch but we don't care what it starts out as.
-      --   test_channel <= (test_channel + 1) mod 4;
-      -- end if;
-      -- Background colour
-      red <= (others => '0');
-      green <= (others => '0');
-      blue <= (others => '0');
-      -- Test generation pattern
-      -- if (  hs > H_RES / 2 - 200
-      --   and hs < H_RES / 2 + 200
-      --   and vs > V_RES / 2 - 200
-      --   and vs < V_RES / 2 + 200
-      -- ) then
-      --   red <= (others => '1');
-      -- end if;
-      --   red <= "001";
-      --   green <= (others => '1');
-      --   blue <= (others => '1');
-      -- end if;
-      -- if test_channel = 0 then
-      --   red <= std_logic_vector(to_unsigned(hs / 32, 3));
-      --   blue <= std_logic_vector(to_unsigned(vs / 32, 3));
-      --   green <= std_logic_vector(to_unsigned((hs + vs) / 16, 3));
-      -- end if;
-      -- if test_channel = 1 then
-      --   green <= std_logic_vector(to_unsigned(hs / 32, 3));
-      -- end if;
-      -- if test_channel = 2 then
-      --   blue <= std_logic_vector(to_unsigned(hs / 32, 3));
-      -- end if;
-
-      red <= i_doutb((VGA_OUTPUT_DEPTH_G * 3) - 1 downto (VGA_OUTPUT_DEPTH_G * 2));
-      green <= i_doutb((VGA_OUTPUT_DEPTH_G * 2) - 1 downto VGA_OUTPUT_DEPTH_G);
-      blue <= i_doutb(VGA_OUTPUT_DEPTH_G - 1 downto 0);
-      -- Horizontal Sync Pulse
-      if (hs < H_RES + H_FRONT_PORCH or hs > H_RES + H_FRONT_PORCH + H_SYNC_PULSE) then
-        o_hs <= sync_polarity;
-      else
-        o_hs <= not sync_polarity;
+      if rising_edge(i_clk25) then
+          -- update counters
+          hs <= hs_next;
+          vs <= vs_next;
+          bram_address_reg <= bram_address_next;
+          -- update signal outs
+          o_vs <= o_vs_next;
+          o_hs <= o_hs_next;
       end if;
-      
-      -- Vertical Sync Pulse
-      if (vs < V_RES + V_FRONT_PORCH or vs > V_RES + V_FRONT_PORCH + V_SYNC_PULSE) then
-        o_vs <= sync_polarity;
-      else
-        o_vs <= not sync_polarity;
-      end if;
-
-      hs <= hs + 1;
-      bram_address_next <= bram_address_next + 1;
-      if ( hs = H_CYCLES ) then
-        vs <= vs + 1;
-        hs <= 0;
-      end if;
-      if (vs = V_CYCLES) then                 
-        bram_address_next <= (others => '0');
-        vs <= 0;
-      end if;
-    end if;
   end process;
+
+  -- combinational logic for next state
+  hs_next <= hs + 1 when hs <= H_CYCLES else 0;
+  bram_address_next <= bram_address_reg + 1 when hs <= H_CYCLES;
+  vs_next <= 0 when vs = V_CYCLES else vs + 1 when hs = H_CYCLES else vs;
+
+  -- VSYNC and HSYNC computed from current state
+  o_hs_next <= not sync_polarity when (hs >= H_RES + H_FRONT_PORCH and hs < H_RES + H_FRONT_PORCH + H_SYNC_PULSE)
+          else sync_polarity;
+
+  o_vs_next <= not sync_polarity when (vs >= V_RES + V_FRONT_PORCH and vs < V_RES + V_FRONT_PORCH + V_SYNC_PULSE)
+          else sync_polarity;
+
 end Behavioral;
